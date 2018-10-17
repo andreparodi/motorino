@@ -1,0 +1,20 @@
+[package]
+name = "motorino"
+version = "0.1.0"
+authors = ["Andre Parodi <andre.parodi@king.com>"]
+build = "build.rs"
+
+[dependencies]
+cgmath = "0.14.1"
+rand = "0.5"
+gl = "0.6.2"
+glfw = "0.21.0"
+image = "0.20.0"
+tobj = "0.1.6"
+imgui = "0.0.20"
+imgui-opengl-renderer = "0.2.3"
+specs = "0.12.2"
+specs-derive = "0.2"
+
+[build-dependencies]
+walkdir = "2.1"

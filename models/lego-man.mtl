@@ -1,0 +1,46 @@
+# Blender MTL File: 'srbrandon_lego_guy.blend'
+# Material Count: 4
+
+newmtl Blue
+Ns 201.960784
+Ka 1.000000 1.000000 1.000000
+Kd 0.000000 0.065185 0.560000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd /Users/andrep/Amazon Drive/coding/lightweight-engine/res/textures/lego-man.jpg
+
+newmtl Material06.001
+Ns 239.215686
+Ka 1.000000 1.000000 1.000000
+Kd 0.600000 0.445018 0.000000
+Ks 0.800000 0.800000 0.800000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd /Users/andrep/Amazon Drive/coding/lightweight-engine/res/textures/lego-man.jpg
+
+newmtl Red
+Ns 203.921569
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.000000 0.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd /Users/andrep/Amazon Drive/coding/lightweight-engine/res/textures/lego-man.jpg
+
+newmtl Yellow
+Ns 196.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd /Users/andrep/Amazon Drive/coding/lightweight-engine/res/textures/lego-man.jpg
