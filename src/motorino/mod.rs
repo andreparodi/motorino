@@ -39,6 +39,11 @@ use self::components::TerrainPhysics;
 use self::components::TerrainTexturePack;
 use self::debugui::DebugInfo;
 use self::debugui::DebugInfoResetter;
+use motorino::models::CubeMapDefinition;
+use motorino::components::SkyboxFlag;
+use motorino::components::Texture;
+use motorino::skybox::SkyboxRenderer;
+use motorino::components::SkyboxTexture;
 
 #[macro_use]
 pub mod macros;
@@ -56,6 +61,7 @@ pub mod player;
 pub mod input;
 pub mod display;
 pub mod ringbuffer;
+pub mod skybox;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct UpdateDeltaTime(f32);
@@ -98,7 +104,10 @@ impl Motorino {
         world.register::<GridPosition>();
         world.register::<RawModel>();
         world.register::<SimpleTexture>();
+        world.register::<Texture>();
         world.register::<PlayerFlag>();
+        world.register::<SkyboxFlag>();
+        world.register::<SkyboxTexture>();
 
         world.add_resource(UpdateDeltaTime::default());
         world.add_resource(DebugInfo::default());
@@ -114,18 +123,92 @@ impl Motorino {
         world.add_resource(debug_ui);
 
         let mut rng = thread_rng();
-        Motorino::create_terrain(&mut loader, &self.resource_loader, &mut world);
+        Motorino::create_terrain(&mut world, &mut loader, &self.resource_loader);
 
-        Motorino::create_multiple_entities(&mut world, &mut rng, &mut loader, "models/tree1.obj", "textures/tree1.jpg", 50);
-        Motorino::create_multiple_entities(&mut world, &mut rng, &mut loader, "models/tree2.obj", "textures/tree2.jpg", 100);
-        Motorino::create_multiple_entities(&mut world, &mut rng, &mut loader, "models/tree3.obj", "textures/tree3.jpg", 300);
+        Motorino::create_multiple_entities(&mut world, &mut loader, &mut rng, "models/tree1b.obj", "textures/tree1.jpg", 50);
+        Motorino::create_multiple_entities(&mut world, &mut loader, &mut rng, "models/tree2b.obj", "textures/tree2.jpg", 100);
+        Motorino::create_multiple_entities(&mut world, &mut loader, &mut rng, "models/tree3b.obj", "textures/tree3.jpg", 300);
+//        Motorino::create_multiple_entities(&mut world, &mut loader, &mut rng, "models/tree3b.obj", "textures/tree3.jpg", 1);
 
-        Motorino::create_player(&mut loader, &mut world);
+        Motorino::create_skybox(&mut world, &mut loader);
+        Motorino::create_player(&mut world, &mut loader);
 
         world
     }
 
-    fn create_player(loader: &mut Loader, world: &mut World) {
+    fn create_skybox(world: &mut World, loader: &mut Loader) {
+        let day_skybox_def: CubeMapDefinition = CubeMapDefinition{
+            back: "textures/skybox/day/back.png".to_string(),
+            front: "textures/skybox/day/front.png".to_string(),
+            bottom: "textures/skybox/day/bottom.png".to_string(),
+            top: "textures/skybox/day/top.png".to_string(),
+            left: "textures/skybox/day/left.png".to_string(),
+            right: "textures/skybox/day/right.png".to_string()
+        };
+        let night_skybox_def: CubeMapDefinition = CubeMapDefinition{
+            back: "textures/skybox/night/back.png".to_string(),
+            front: "textures/skybox/night/front.png".to_string(),
+            bottom: "textures/skybox/night/bottom.png".to_string(),
+            top: "textures/skybox/night/top.png".to_string(),
+            left: "textures/skybox/night/left.png".to_string(),
+            right: "textures/skybox/night/right.png".to_string()
+        };
+
+        const SIZE: f32 = 500.0;
+
+const cubmap_vertex_positions: [f32; 108] = [
+    -SIZE,  SIZE, -SIZE,
+    -SIZE, -SIZE, -SIZE,
+    SIZE, -SIZE, -SIZE,
+    SIZE, -SIZE, -SIZE,
+    SIZE,  SIZE, -SIZE,
+    -SIZE,  SIZE, -SIZE,
+
+    -SIZE, -SIZE,  SIZE,
+    -SIZE, -SIZE, -SIZE,
+    -SIZE,  SIZE, -SIZE,
+    -SIZE,  SIZE, -SIZE,
+    -SIZE,  SIZE,  SIZE,
+    -SIZE, -SIZE,  SIZE,
+
+    SIZE, -SIZE, -SIZE,
+    SIZE, -SIZE,  SIZE,
+    SIZE,  SIZE,  SIZE,
+    SIZE,  SIZE,  SIZE,
+    SIZE,  SIZE, -SIZE,
+    SIZE, -SIZE, -SIZE,
+
+    -SIZE, -SIZE,  SIZE,
+    -SIZE,  SIZE,  SIZE,
+    SIZE,  SIZE,  SIZE,
+    SIZE,  SIZE,  SIZE,
+    SIZE, -SIZE,  SIZE,
+    -SIZE, -SIZE,  SIZE,
+
+    -SIZE,  SIZE, -SIZE,
+    SIZE,  SIZE, -SIZE,
+    SIZE,  SIZE,  SIZE,
+    SIZE,  SIZE,  SIZE,
+    -SIZE,  SIZE,  SIZE,
+    -SIZE,  SIZE, -SIZE,
+
+    -SIZE, -SIZE, -SIZE,
+    -SIZE, -SIZE,  SIZE,
+    SIZE, -SIZE, -SIZE,
+    SIZE, -SIZE, -SIZE,
+    -SIZE, -SIZE,  SIZE,
+    SIZE, -SIZE,  SIZE];
+
+        world.create_entity()
+            .with(SkyboxFlag {})
+            .with(SkyboxTexture {
+                day_texture: loader.load_cube_map(&day_skybox_def),
+                night_texture: loader.load_cube_map(&night_skybox_def)})
+            .with(loader.load_positions_to_vao(&cubmap_vertex_positions, 3))
+            .build();
+    }
+
+    fn create_player(world: &mut World, loader: &mut Loader) {
         world.create_entity()
             .with(Transform { position: Vector3 { x: 0.0, y: 0.0, z: 0.0 }, ..Transform::default() })
             .with(loader.load_from_obj("models/lego-man.obj"))
@@ -135,7 +218,7 @@ impl Motorino {
             .build();
     }
 
-    fn create_terrain(mut loader: &mut Loader, resource_loader: &ResourceLoader, world: &mut World) {
+    fn create_terrain(world: &mut World, mut loader: &mut Loader, resource_loader: &ResourceLoader) {
         let height_map = resource_loader.load_image("textures/heightmap.png").unwrap();
         let terrain_texture_pack = TerrainTexturePack::new(loader, "textures/grass.jpg", "textures/mud.jpg", "textures/grass-flowers.jpg", "textures/path.jpg", "textures/blend-map.jpg");
         let terrain = Terrain::new(&mut loader, 0, 0, &height_map);
@@ -154,7 +237,7 @@ impl Motorino {
             .build();
     }
 
-    fn create_multiple_entities(world: &mut World, rng: &mut ThreadRng, loader: &mut Loader, model: &str, texture: &str, count: i32) {
+    fn create_multiple_entities(world: &mut World, loader: &mut Loader, rng: &mut ThreadRng, model: &str, texture: &str, count: i32) {
         let model = loader.load_from_obj(&model);
         let tex = loader.load_simple_texture(&texture, 0.0, 20.0).unwrap();
 
@@ -187,6 +270,7 @@ impl Motorino {
             .with_thread_local(ClearScreenRenderer)
             .with_thread_local(TerrainRenderer::new(&self.resource_loader))
             .with_thread_local(EntityRenderer::new(&self.resource_loader))
+            .with_thread_local(SkyboxRenderer::new(&self.resource_loader))
             .with_thread_local(DebugUiBuilder)
             .with_thread_local(WindowEventHandler::new(event_receiver))
             .build();

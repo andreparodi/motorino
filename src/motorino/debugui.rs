@@ -99,7 +99,6 @@ impl DebugUi {
             },
             None => {}
         }
-
     }
 
     pub fn set_keyboard_input_state(&mut self, key_events: &KeyEvents) {
@@ -214,7 +213,7 @@ impl<'a> System<'a> for DebugUiBuilder {
         let imgui_renderer = imgui_renderer_opt.as_ref().unwrap();
 
         let dt = dt.0;
-        let ui = imgui.frame(FrameSize::new(window_size.width as f64, window_size.height as f64, 2.0), dt);
+        let ui = imgui.frame(FrameSize::new(window_size.width as f64, window_size.height as f64, 1.0), dt);
         ui.window(im_str!("Debug info"))
             .position((10.0, 10.0), ImGuiCond::FirstUseEver)
             .size((300.0, 300.0), ImGuiCond::FirstUseEver)
@@ -248,7 +247,7 @@ impl<'a> System<'a> for DebugUiBuilder {
                 if ui.collapsing_header(im_str!("Fog")).build() {
                     ui.slider_float(im_str!("fog density"), &mut fog.density, 0.0, 1.0).build();
                     ui.slider_float(im_str!("fog gradient"), &mut fog.gradient, 0.0, 10.0).build();
-                    ui.color_picker(im_str!("Light Color"), fog.colour.as_mut() as &mut [f32; 3]).build();
+                    ui.color_picker(im_str!("Light Color"), fog.day_colour.as_mut() as &mut [f32; 3]).build();
                 }
             });
         imgui_renderer.render(ui);

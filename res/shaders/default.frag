@@ -13,7 +13,10 @@ uniform sampler2D texture_sampler;
 uniform vec3 light_colour;
 uniform float reflectivity;
 uniform float shine_damper;
-uniform vec3 sky_colour;
+uniform vec3 day_sky_colour;
+uniform vec3 night_sky_colour;
+uniform float blend_factor;
+
 
 void main() {
     vec3 unit_normal = normalize(surface_normal);
@@ -34,8 +37,10 @@ void main() {
     //vec3 pos_norm = normalize(debug_var);
 
     //out_colour = vec4(pos_norm, 1.0);
+    vec3 final_sky_colour = mix(day_sky_colour, night_sky_colour, blend_factor);
+
     out_colour = vec4(specular_light, 1.0) + vec4(diffuse, 1.0) * texture(texture_sampler, passed_texture_coords);
-    out_colour = mix(vec4(sky_colour, 1.0), out_colour, visibility);
+    out_colour = mix(vec4(final_sky_colour, 1.0), out_colour, visibility);
     //out_colour = vec4(pos, 1.0);
     //out_colour = vec4(diffuse, 1.0) * texture(texture_sampler, passed_texture_coords);
 

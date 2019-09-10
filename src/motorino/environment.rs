@@ -8,14 +8,15 @@ pub struct Light {
 impl Default for Light {
     fn default() -> Light {
         Light {
-            position: Vector3::new(0.0, 50.0, -20.0),
+            position: Vector3::new(0.0, 600.0, -20.0),
             colour: Vector3::new(1.0, 1.0, 1.0)
         }
     }
 }
 
 pub struct Fog {
-    pub colour: Vector3<f32>,
+    pub day_colour: Vector3<f32>,
+    pub night_colour: Vector3<f32>,
     pub density: f32,
     pub gradient: f32
 }
@@ -23,7 +24,8 @@ pub struct Fog {
 impl Default for Fog {
     fn default() -> Fog {
         Fog {
-            colour: Vector3 {x: 1.0, y: 1.0, z:1.0},
+            day_colour: Vector3 {x: 0.78, y: 0.86, z:0.86},
+            night_colour: Vector3 {x: 0.275, y: 0.275, z:0.275},
             density: 0.007,
             gradient: 1.5
         }

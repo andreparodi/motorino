@@ -19,9 +19,9 @@ pub struct RenderConstants {
 }
 
 impl RenderConstants {
-    const FOV: f32 = 45.0;
-    const NEAR_PLANE: f32 = 0.1;
-    const FAR_PLANE: f32 = 200.0;
+    pub const FOV: f32 = 45.0;
+    pub const NEAR_PLANE: f32 = 0.1;
+    pub const FAR_PLANE: f32 = 1500.0;
 }
 
 
@@ -92,7 +92,9 @@ impl EntityRenderer {
             self.entity_shader.set_mat4(c_str!("view_matrix"), &camera.get_view_matrix());
             self.entity_shader.set_vector3(c_str!("light_position"), &light.position);
             self.entity_shader.set_vector3(c_str!("light_colour"), &light.colour);
-            self.entity_shader.set_vector3(c_str!("sky_colour"), &fog.colour);
+            self.entity_shader.set_vector3(c_str!("day_sky_colour"), &fog.day_colour);
+            self.entity_shader.set_vector3(c_str!("night_sky_colour"), &fog.night_colour);
+            self.entity_shader.set_float(c_str!("blend_factor"), 0.5);
             self.entity_shader.set_float(c_str!("fog_density"), fog.density);
             self.entity_shader.set_float(c_str!("fog_gradient"), fog.gradient);
         }
@@ -198,7 +200,9 @@ impl TerrainRenderer {
             self.terrain_shader.set_mat4(c_str!("view_matrix"), &camera.get_view_matrix());
             self.terrain_shader.set_vector3(c_str!("light_position"), &light.position);
             self.terrain_shader.set_vector3(c_str!("light_colour"), &light.colour);
-            self.terrain_shader.set_vector3(c_str!("sky_colour"), &fog.colour);
+            self.terrain_shader.set_vector3(c_str!("day_sky_colour"), &fog.day_colour);
+            self.terrain_shader.set_vector3(c_str!("night_sky_colour"), &fog.night_colour);
+            self.terrain_shader.set_float(c_str!("blend_factor"), 0.5);
             self.terrain_shader.set_float(c_str!("fog_density"), fog.density);
             self.terrain_shader.set_float(c_str!("fog_gradient"), fog.gradient);
         }

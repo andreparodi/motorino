@@ -47,6 +47,13 @@ impl Component for PlayerFlag {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
+pub struct SkyboxFlag;
+
+impl Component for SkyboxFlag {
+    type Storage = NullStorage<Self>;
+}
+
+#[derive(Clone, Copy, Debug, Default)]
 pub struct GridPosition {
     pub x: i32,
     pub z: i32
@@ -58,11 +65,12 @@ impl Component for GridPosition {
 
 #[derive(Clone, Copy, Debug)]
 pub struct TerrainTexturePack {
-    pub background_texture: TerrainTexture,
-    pub r_texture: TerrainTexture,
-    pub g_texture: TerrainTexture,
-    pub b_texture: TerrainTexture,
-    pub blend_map_texture: TerrainTexture}
+    pub background_texture: Texture,
+    pub r_texture: Texture,
+    pub g_texture: Texture,
+    pub b_texture: Texture,
+    pub blend_map_texture: Texture
+}
 
 impl Component for TerrainTexturePack {
     type Storage = VecStorage<Self>;
@@ -80,8 +88,22 @@ impl TerrainTexturePack {
 }
 
 #[derive(Copy, Clone, Debug)]
-pub struct TerrainTexture {
+pub struct Texture {
     pub texture_id: GLuint
+}
+
+impl Component for Texture {
+    type Storage = VecStorage<Self>;
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct SkyboxTexture {
+    pub day_texture: Texture,
+    pub night_texture: Texture
+}
+
+impl Component for SkyboxTexture {
+    type Storage = VecStorage<Self>;
 }
 
 #[derive(Clone, Copy, Debug)]
